@@ -11,12 +11,22 @@ import {
   Text
 } from "@shoutem/ui";
 import Fitness from "./Fitness";
+import Session from "./Session";
 console.disableYellowBox = true;
 
 class App extends React.Component {
   state = {
     fontsAreLoaded: false,
-    exp: 0
+    exp: 0,
+    session: -1 // 1 = PULL, 2 = PUSH, 3 = LEGS, -1 = NO SESSION IN PROGRESS
+  };
+
+  updateSession = type => {
+    this.setState({ session: type });
+  };
+
+  completeSession = () => {
+    this.setState({ session: -1 });
   };
 
   _onPressExpUp = () => {
@@ -89,6 +99,19 @@ class App extends React.Component {
     this.setState({ fontsAreLoaded: true });
   }
 
+  renderPage() {
+    if (this.state.session != -1) {
+      return (
+        <Session
+          sessionType={this.state.session}
+          completeSession={this.completeSession}
+        />
+      );
+    } else {
+      return <Fitness updateSession={this.updateSession} />;
+    }
+  }
+
   render() {
     if (!this.state.fontsAreLoaded) {
       return <AppLoading />;
@@ -102,7 +125,7 @@ class App extends React.Component {
           centerComponent={<Title style={{ fontSize: 20 }}>HabiBuddy</Title>}
           styleName="inline"
         />
-        <Fitness />
+        {this.renderPage()}
       </View>
     );
   }
