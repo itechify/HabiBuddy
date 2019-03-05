@@ -1,0 +1,23 @@
+      <View styleName="fill-parent vertical h-center v-start" paddingTop={50}>
+        <Title>HabiBuddy</Title>
+      </View>
+
+              <Heading
+          style={{ paddingBottom: 20, color: "gold", textAlign: "center" }}
+        >
+          EXP: {this.state.exp}
+        </Heading>
+        <Button
+          onPress={this._onPressExpUp}
+          styleName="secondary"
+          style={{ width: 100 }}
+        >
+          <Text>Add EXP</Text>
+        </Button>
+        <Button
+          onPress={this._resetExpDebug}
+          styleName="secondary"
+          style={{ width: 200, top: 50 }}
+        >
+          <Text>Reset EXP</Text>
+        </Button>

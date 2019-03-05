@@ -10,6 +10,7 @@ import {
   Button,
   Text
 } from "@shoutem/ui";
+import Fitness from "./Fitness";
 console.disableYellowBox = true;
 
 class App extends React.Component {
@@ -23,7 +24,7 @@ class App extends React.Component {
       method: "GET",
       headers: {
         "x-api-user": "cc68f182-9b83-436d-b92c-f6d9830211ed",
-        "x-api-key": ""
+        "x-api-key": "7c5fc0e7-99a3-4163-8ba7-d91448e76124"
       }
     })
       .then(results => {
@@ -34,7 +35,7 @@ class App extends React.Component {
           method: "PUT",
           headers: {
             "x-api-user": "cc68f182-9b83-436d-b92c-f6d9830211ed",
-            "x-api-key": "",
+            "x-api-key": "7c5fc0e7-99a3-4163-8ba7-d91448e76124",
             "Content-Type": "application/json"
           },
           body: JSON.stringify({ "stats.exp": data.data.stats.exp + 1 })
@@ -48,7 +49,7 @@ class App extends React.Component {
       method: "PUT",
       headers: {
         "x-api-user": "cc68f182-9b83-436d-b92c-f6d9830211ed",
-        "x-api-key": "",
+        "x-api-key": "7c5fc0e7-99a3-4163-8ba7-d91448e76124",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ "stats.exp": 0 })
@@ -61,7 +62,7 @@ class App extends React.Component {
       method: "GET",
       headers: {
         "x-api-user": "cc68f182-9b83-436d-b92c-f6d9830211ed",
-        "x-api-key": ""
+        "x-api-key": "7c5fc0e7-99a3-4163-8ba7-d91448e76124"
       }
     })
       .then(results => {
@@ -94,32 +95,14 @@ class App extends React.Component {
     }
 
     return (
-      <View
-        styleName="fill-parent vertical v-center"
-        style={{ alignItems: "center" }}
-      >
+      <View style={{ flex: 1 }}>
         <StatusBar hidden={true} />
         <NavigationBar
           leftComponent={<Icon name="sidebar" />}
           centerComponent={<Title style={{ fontSize: 20 }}>HabiBuddy</Title>}
+          styleName="inline"
         />
-        <Heading style={{ paddingBottom: 20, color: "gold" }}>
-          EXP: {this.state.exp}
-        </Heading>
-        <Button
-          onPress={this._onPressExpUp}
-          styleName="secondary"
-          style={{ width: 100 }}
-        >
-          <Text>Add EXP</Text>
-        </Button>
-        <Button
-          onPress={this._resetExpDebug}
-          styleName="secondary"
-          style={{ width: 200, top: 50 }}
-        >
-          <Text>Reset EXP</Text>
-        </Button>
+        <Fitness />
       </View>
     );
   }
