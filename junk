@@ -21,3 +21,53 @@
         >
           <Text>Reset EXP</Text>
         </Button>
+
+
+            const pastSessions = [
+      {
+        type: "Gaspar Brasserie",
+        date: "185 Sutter St, San Francisco, CA 94109"
+      },
+      {
+        type: "Chalk Point Kitchen",
+        date: "527 Broome St, New York, NY 10013"
+      },
+      {
+        type: "Gaspar Brasserie",
+        date: "185 Sutter St, San Francisco, CA 94109"
+      }
+    ];
+
+
+
+
+
+      completeSession = async () => {
+    let parsed = null;
+    let date = new Date();
+
+    try {
+      let pastSessions = await AsyncStorage.getItem("pastSessions");
+      parsed = JSON.parse(pastSessions);
+
+      if (parsed != null) {
+        parsed.push({
+          type: this.state.session,
+          date: date.toLocaleDateString()
+        });
+      } else {
+        parsed = new Array(1);
+        parsed[0] = {
+          type: this.state.session,
+          date: date.toLocaleDateString()
+        };
+      }
+    } catch (error) {
+      alert(error);
+    }
+
+    AsyncStorage.setItem("pastSessions", JSON.stringify(parsed));
+
+    this.setState({ session: "NONE" });
+    this.setState({ pastSessions: parsed });
+  };

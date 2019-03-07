@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { AsyncStorage } from "react-native";
 import {
   ListView,
   Row,
@@ -8,13 +9,63 @@ import {
   Text,
   View,
   Button,
-  Tile
+  Tile,
+  TouchableOpacity
 } from "@shoutem/ui";
 import Modal from "react-native-modal";
+import SessionHistoryItem from "./SessionHistoryItem";
+import Session from "./Session";
 
 class Fitness extends React.Component {
-  state = {
-    showChooseModal: false
+  constructor(props) {
+    super(props);
+    this.state = {
+      showChooseModal: false,
+      pastSessions: [],
+      session: "NONE"
+    };
+    this.renderSessionHistoryItem = this.renderSessionHistoryItem.bind(this);
+    AsyncStorage.getItem("pastSessions").then(pastSessions => {
+      if (pastSessions != null) {
+        this.setState({
+          pastSessions: JSON.parse(pastSessions)
+        });
+      }
+    });
+  }
+
+  updateSession = type => {
+    this.setState({ session: type });
+  };
+
+  completeSession = () => {
+    let ps = this.state.pastSessions.slice(0); //copy of state
+    let date = new Date();
+
+    if (ps.length != 0) {
+      ps.push({
+        type: this.state.session,
+        date: date.toLocaleDateString()
+      });
+    } else {
+      ps = new Array(1);
+      ps[0] = {
+        type: this.state.session,
+        date: date.toLocaleDateString()
+      };
+    }
+
+    AsyncStorage.setItem("pastSessions", JSON.stringify(ps));
+
+    this.setState({ session: "NONE" });
+    this.setState({ pastSessions: ps });
+  };
+
+  removeSession = index => {
+    const ps = this.state.pastSessions.slice(0); //copy of state
+    ps.splice(index, 1);
+    this.setState({ pastSessions: ps });
+    AsyncStorage.setItem("pastSessions", JSON.stringify(ps));
   };
 
   _onPressAddSession = () => {
@@ -23,51 +74,37 @@ class Fitness extends React.Component {
 
   _onPressMakeChoicePush = () => {
     this.setState({ showChooseModal: false });
-    this.props.updateSession(1);
+    this.setState({ session: "PUSH" });
   };
 
   _onPressMakeChoicePull = () => {
     this.setState({ showChooseModal: false });
-    this.props.updateSession(2);
+    this.setState({ session: "PULL" });
   };
 
   _onPressMakeChoiceLegs = () => {
     this.setState({ showChooseModal: false });
-    this.props.updateSession(3);
+    this.setState({ session: "LEGS" });
   };
 
-  renderSessionRowItem(session) {
+  renderSessionHistoryItem(session, sid, index) {
     return (
-      <Row styleName="small">
-        <Icon name="rsvp" />
-        <View styleName="vertical">
-          <Subtitle>{session.type}</Subtitle>
-          <Text numberOfLines={1}>{session.date}</Text>
-        </View>
-      </Row>
+      <SessionHistoryItem
+        session={session}
+        index={index}
+        removeSession={this.removeSession}
+      />
     );
   }
 
-  render() {
-    const pastSessions = [
-      {
-        type: "Gaspar Brasserie",
-        date: "185 Sutter St, San Francisco, CA 94109"
-      },
-      {
-        type: "Chalk Point Kitchen",
-        date: "527 Broome St, New York, NY 10013"
-      },
-      {
-        type: "Gaspar Brasserie",
-        date: "185 Sutter St, San Francisco, CA 94109"
-      }
-    ];
-
+  renderFitnessHome() {
     return (
       <View style={{ flex: 1 }}>
         <View style={{ height: 600 }}>
-          <ListView data={pastSessions} renderRow={this.renderSessionRowItem} />
+          <ListView
+            data={this.state.pastSessions}
+            renderRow={this.renderSessionHistoryItem}
+          />
         </View>
         <View style={{ flex: 1 }}>
           <Button
@@ -97,17 +134,6 @@ class Fitness extends React.Component {
               }}
             >
               <Button
-                onPress={this._onPressMakeChoicePush}
-                styleName="full-width"
-              >
-                <Text
-                  styleName="bold"
-                  style={{ fontSize: 40, paddingHorizontal: 100 }}
-                >
-                  PUSH
-                </Text>
-              </Button>
-              <Button
                 onPress={this._onPressMakeChoicePull}
                 styleName="full-width"
               >
@@ -116,6 +142,17 @@ class Fitness extends React.Component {
                   style={{ fontSize: 40, paddingHorizontal: 100 }}
                 >
                   PULL
+                </Text>
+              </Button>
+              <Button
+                onPress={this._onPressMakeChoicePush}
+                styleName="full-width"
+              >
+                <Text
+                  styleName="bold"
+                  style={{ fontSize: 40, paddingHorizontal: 100 }}
+                >
+                  PUSH
                 </Text>
               </Button>
               <Button
@@ -134,6 +171,19 @@ class Fitness extends React.Component {
         </Modal>
       </View>
     );
+  }
+
+  render() {
+    if (this.state.session == "NONE") {
+      return this.renderFitnessHome();
+    } else {
+      return (
+        <Session
+          sessionType={this.state.session}
+          completeSession={this.completeSession}
+        />
+      );
+    }
   }
 }
 

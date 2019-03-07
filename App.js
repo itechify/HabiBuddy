@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar } from "react-native";
+import { StatusBar, AsyncStorage } from "react-native";
 import { Font, AppLoading } from "expo";
 import {
   View,
@@ -8,25 +8,16 @@ import {
   Icon,
   Heading,
   Button,
-  Text
+  Text,
+  TouchableOpacity
 } from "@shoutem/ui";
 import Fitness from "./Fitness";
-import Session from "./Session";
 console.disableYellowBox = true;
 
 class App extends React.Component {
   state = {
     fontsAreLoaded: false,
-    exp: 0,
-    session: -1 // 1 = PULL, 2 = PUSH, 3 = LEGS, -1 = NO SESSION IN PROGRESS
-  };
-
-  updateSession = type => {
-    this.setState({ session: type });
-  };
-
-  completeSession = () => {
-    this.setState({ session: -1 });
+    currPage: "HabiBuddy"
   };
 
   _onPressExpUp = () => {
@@ -100,15 +91,20 @@ class App extends React.Component {
   }
 
   renderPage() {
-    if (this.state.session != -1) {
-      return (
-        <Session
-          sessionType={this.state.session}
-          completeSession={this.completeSession}
-        />
-      );
-    } else {
-      return <Fitness updateSession={this.updateSession} />;
+    switch (this.state.currPage) {
+      case "Fitness":
+        return <Fitness />;
+      default:
+        return (
+          <Button
+            onPress={() => this.setState({ currPage: "Fitness" })}
+            styleName="secondary"
+          >
+            <Text styleName="bold" style={{ fontSize: 40 }}>
+              FITNESS
+            </Text>
+          </Button>
+        );
     }
   }
 
@@ -121,8 +117,16 @@ class App extends React.Component {
       <View style={{ flex: 1 }}>
         <StatusBar hidden={true} />
         <NavigationBar
-          leftComponent={<Icon name="sidebar" />}
-          centerComponent={<Title style={{ fontSize: 20 }}>HabiBuddy</Title>}
+          leftComponent={
+            <TouchableOpacity
+              onPress={() => this.setState({ currPage: "HabiBuddy" })}
+            >
+              <Icon name="home" style={{ paddingLeft: 20 }} grid={100} />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Title style={{ fontSize: 20 }}>{this.state.currPage}</Title>
+          }
           styleName="inline"
         />
         {this.renderPage()}

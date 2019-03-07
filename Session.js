@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, AsyncStorage } from "react";
 import {
   ListView,
   Row,
@@ -16,9 +16,9 @@ import RoutineItem from "./RoutineItem";
 
 class Session extends React.Component {
   renderRoutine() {
-    if (this.props.sessionType == 1) {
+    if (this.props.sessionType == "PULL") {
       return this.renderPullRoutine();
-    } else if (this.props.sessionType == 2) {
+    } else if (this.props.sessionType == "PUSH") {
       return this.renderPushRoutine();
     } else {
       return this.renderLegsRoutine();
@@ -55,7 +55,7 @@ class Session extends React.Component {
           reps="3x8-12 / 3x15-20"
         />
         <RoutineItem
-          workout="Overhead Triceps Extensions SS 3x15-20 Lateral Raises"
+          workout="Overhead Triceps Extensions SS Lateral Raises"
           reps="3x8-12 / 3x15-20"
         />
       </View>
