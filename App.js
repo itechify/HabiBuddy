@@ -9,9 +9,11 @@ import {
   Heading,
   Button,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  Tile
 } from "@shoutem/ui";
 import Fitness from "./Fitness";
+import WaterHelper from "./WaterHelper";
 console.disableYellowBox = true;
 
 class App extends React.Component {
@@ -96,14 +98,25 @@ class App extends React.Component {
         return <Fitness />;
       default:
         return (
-          <Button
-            onPress={() => this.setState({ currPage: "Fitness" })}
-            styleName="secondary"
+          <Tile
+            style={{
+              alignItems: "center",
+              flex: 1
+            }}
           >
-            <Text styleName="bold" style={{ fontSize: 40 }}>
-              FITNESS
-            </Text>
-          </Button>
+            <Button
+              onPress={() => this.setState({ currPage: "Fitness" })}
+              style={{
+                flex: 4
+              }}
+              styleName="full-width secondary"
+            >
+              <Text styleName="bold" style={{ fontSize: 40 }}>
+                FITNESS
+              </Text>
+            </Button>
+            <WaterHelper />
+          </Tile>
         );
     }
   }
@@ -121,11 +134,13 @@ class App extends React.Component {
             <TouchableOpacity
               onPress={() => this.setState({ currPage: "HabiBuddy" })}
             >
-              <Icon name="home" style={{ paddingLeft: 20 }} grid={100} />
+              <Icon name="home" style={{ paddingLeft: 10 }} />
             </TouchableOpacity>
           }
           centerComponent={
-            <Title style={{ fontSize: 20 }}>{this.state.currPage}</Title>
+            <Title style={{ fontSize: 20 }} styleName="bold">
+              {this.state.currPage}
+            </Title>
           }
           styleName="inline"
         />

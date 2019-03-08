@@ -22,14 +22,25 @@ class Fitness extends React.Component {
     this.state = {
       showChooseModal: false,
       pastSessions: [],
-      session: "NONE"
+      session: "NONE",
+      badChoice: ""
     };
     this.renderSessionHistoryItem = this.renderSessionHistoryItem.bind(this);
     AsyncStorage.getItem("pastSessions").then(pastSessions => {
-      if (pastSessions != null) {
+      if (pastSessions.length != 0) {
         this.setState({
           pastSessions: JSON.parse(pastSessions)
         });
+
+        if (
+          Date.now() - Date.parse(this.state.pastSessions[0].date) <
+          86400000
+        ) {
+          this.setState({
+            badChoice: this.state.pastSessions[0].type
+          });
+        }
+        console.log(this.state.badChoice);
       }
     });
   }
@@ -43,7 +54,7 @@ class Fitness extends React.Component {
     let date = new Date();
 
     if (ps.length != 0) {
-      ps.push({
+      ps.unshift({
         type: this.state.session,
         date: date.toLocaleDateString()
       });
@@ -57,15 +68,20 @@ class Fitness extends React.Component {
 
     AsyncStorage.setItem("pastSessions", JSON.stringify(ps));
 
+    this.setState({ badChoice: ps[0].type });
     this.setState({ session: "NONE" });
     this.setState({ pastSessions: ps });
   };
 
   removeSession = index => {
     const ps = this.state.pastSessions.slice(0); //copy of state
-    ps.splice(index, 1);
+    let removed = ps.splice(index, 1);
     this.setState({ pastSessions: ps });
     AsyncStorage.setItem("pastSessions", JSON.stringify(ps));
+
+    if (this.state.badChoice == removed[0].type) {
+      this.setState({ badChoice: "" });
+    }
   };
 
   _onPressAddSession = () => {
@@ -112,7 +128,7 @@ class Fitness extends React.Component {
             style={{ flex: 1 }}
             onPress={this._onPressAddSession}
           >
-            <Text>New Session</Text>
+            <Text style={{ fontSize: 20 }}>New Session</Text>
           </Button>
         </View>
         <Modal
@@ -135,7 +151,12 @@ class Fitness extends React.Component {
             >
               <Button
                 onPress={this._onPressMakeChoicePull}
-                styleName="full-width"
+                disabled={this.state.badChoice == "PULL"}
+                styleName={
+                  this.state.badChoice == "PULL"
+                    ? "full-width muted"
+                    : "full-width"
+                }
               >
                 <Text
                   styleName="bold"
@@ -146,7 +167,12 @@ class Fitness extends React.Component {
               </Button>
               <Button
                 onPress={this._onPressMakeChoicePush}
-                styleName="full-width"
+                disabled={this.state.badChoice == "PUSH"}
+                styleName={
+                  this.state.badChoice == "PUSH"
+                    ? "full-width muted"
+                    : "full-width"
+                }
               >
                 <Text
                   styleName="bold"
@@ -157,7 +183,12 @@ class Fitness extends React.Component {
               </Button>
               <Button
                 onPress={this._onPressMakeChoiceLegs}
-                styleName="full-width"
+                disabled={this.state.badChoice == "LEGS"}
+                styleName={
+                  this.state.badChoice == "LEGS"
+                    ? "full-width muted"
+                    : "full-width"
+                }
               >
                 <Text
                   styleName="bold"

@@ -23,7 +23,7 @@ class SessionHistoryItem extends React.Component {
       >
         <Row styleName="small">
           <Icon name="rsvp" />
-          <View styleName="vertical">
+          <View styleName="vertical" style={{ paddingLeft: 10 }}>
             <Subtitle>{this.props.session.type}</Subtitle>
             <Text numberOfLines={1}>{this.props.session.date}</Text>
           </View>
