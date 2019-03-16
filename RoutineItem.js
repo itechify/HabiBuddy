@@ -1,17 +1,46 @@
 import React, { Component } from "react";
+import { TouchableWithoutFeedback } from "react-native";
 import {
   Row,
   Icon,
   Title,
   Text,
   View,
-  TouchableOpacity,
-  Subtitle
+  Subtitle,
+  Tile,
+  TextInput,
+  Caption
 } from "@shoutem/ui";
+import Swipeout from "react-native-swipeout";
+import { AsyncStorage } from "react-native";
 
 class RoutineItem extends React.Component {
-  state = {
-    status: "checkbox-off"
+  constructor(props) {
+    super(props);
+    this.state = {
+      status: "checkbox-off",
+      lastweight: "0"
+    };
+
+    this.hasChanged = false;
+
+    AsyncStorage.getItem(this.props.workout).then(workoutInfo => {
+      if (workoutInfo != null) {
+        this.setState({
+          lastweight: JSON.parse(workoutInfo).lastweight
+        });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.hasChanged)
+      AsyncStorage.setItem(this.props.workout, JSON.stringify(this.state));
+  }
+
+  onChangeWeightText = text => {
+    this.setState({ lastweight: text });
+    this.hasChanged = true;
   };
 
   _onPress = () => {
@@ -23,10 +52,38 @@ class RoutineItem extends React.Component {
   };
 
   render() {
+    let swipeoutBtns = [
+      {
+        component: (
+          <Tile style={{ flex: 1, alignItems: "center" }}>
+            <Caption style={{ fontSize: 14 }}>Weight</Caption>
+            <TextInput
+              defaultValue={this.state.lastweight.toString()}
+              onChangeText={this.onChangeWeightText}
+              style={{
+                fontSize: 25,
+                padding: 0,
+                margin: 0,
+                borderWidth: 0,
+                textAlign: "center"
+              }}
+            />
+          </Tile>
+        )
+      }
+    ];
+
     return (
-      <TouchableOpacity onPress={this._onPress}>
+      <Swipeout
+        right={swipeoutBtns}
+        autoClose={false}
+        backgroundColor="transparent"
+        buttonWidth={150}
+      >
         <Row styleName="small" style={{ paddingVertical: 50 }}>
-          <Icon name={this.state.status} />
+          <TouchableWithoutFeedback onPress={this._onPress}>
+            <Icon name={this.state.status} style={{ fontSize: 30 }} />
+          </TouchableWithoutFeedback>
           <View styleName="vertical">
             <Subtitle styleName="bold" style={{ fontSize: 18 }}>
               {this.props.workout}
@@ -34,7 +91,7 @@ class RoutineItem extends React.Component {
             <Text style={{ fontSize: 12 }}>{this.props.reps}</Text>
           </View>
         </Row>
-      </TouchableOpacity>
+      </Swipeout>
     );
   }
 }

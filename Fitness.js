@@ -26,8 +26,11 @@ class Fitness extends React.Component {
       badChoice: ""
     };
     this.renderSessionHistoryItem = this.renderSessionHistoryItem.bind(this);
+  }
+
+  componentDidMount() {
     AsyncStorage.getItem("pastSessions").then(pastSessions => {
-      if (pastSessions.length != 0) {
+      if (pastSessions != null && pastSessions != "[]") {
         this.setState({
           pastSessions: JSON.parse(pastSessions)
         });
@@ -40,7 +43,6 @@ class Fitness extends React.Component {
             badChoice: this.state.pastSessions[0].type
           });
         }
-        console.log(this.state.badChoice);
       }
     });
   }

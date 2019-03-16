@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar, AsyncStorage } from "react-native";
+import { StatusBar, AsyncStorage, Dimensions } from "react-native";
 import { Font, AppLoading } from "expo";
 import {
   View,
@@ -10,10 +10,18 @@ import {
   Button,
   Text,
   TouchableOpacity,
-  Tile
+  Tile,
+  Row
 } from "@shoutem/ui";
 import Fitness from "./Fitness";
 import WaterHelper from "./WaterHelper";
+import Reactotron, { asyncStorage } from "reactotron-react-native";
+import MoodTracker from "./MoodTracker";
+
+Reactotron.configure({ host: "192.168.1.79", port: 9090 })
+  .useReactNative()
+  .use(asyncStorage())
+  .connect();
 console.disableYellowBox = true;
 
 class App extends React.Component {
@@ -93,30 +101,40 @@ class App extends React.Component {
   }
 
   renderPage() {
+    let width = Dimensions.get("window").width;
+
     switch (this.state.currPage) {
       case "Fitness":
         return <Fitness />;
       default:
         return (
-          <Tile
+          <View
             style={{
+              flex: 1,
               alignItems: "center",
-              flex: 1
+              justifyContent: "space-around",
+              paddingVertical: 10
             }}
           >
-            <Button
+            <TouchableOpacity
               onPress={() => this.setState({ currPage: "Fitness" })}
               style={{
-                flex: 4
+                height: 160,
+                width: width * 0.87,
+                borderWidth: 2,
+                backgroundColor: "blue"
               }}
-              styleName="full-width secondary"
             >
-              <Text styleName="bold" style={{ fontSize: 40 }}>
-                FITNESS
-              </Text>
-            </Button>
+              <Row>
+                <Text styleName="bold" style={{ fontSize: 40 }}>
+                  FITNESS
+                </Text>
+                <Icon styleName="disclosure" name="right-arrow" />
+              </Row>
+            </TouchableOpacity>
+            <MoodTracker />
             <WaterHelper />
-          </Tile>
+          </View>
         );
     }
   }
@@ -127,7 +145,13 @@ class App extends React.Component {
     }
 
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        styleName="vertical"
+        style={{
+          flex: 1,
+          justifyContent: "flex-start"
+        }}
+      >
         <StatusBar hidden={true} />
         <NavigationBar
           leftComponent={

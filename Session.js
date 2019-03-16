@@ -1,4 +1,4 @@
-import React, { Component, AsyncStorage } from "react";
+import React, { Component } from "react";
 import {
   ListView,
   Row,

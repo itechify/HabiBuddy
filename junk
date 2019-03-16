@@ -71,3 +71,11 @@
     this.setState({ session: "NONE" });
     this.setState({ pastSessions: parsed });
   };
+
+
+                style={{
+                borderRadius: 60,
+                borderWidth: 2,
+                textAlign: "center",
+                borderColor: "#969696"
+              }}
