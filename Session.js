@@ -16,60 +16,16 @@ import RoutineItem from "./RoutineItem";
 
 class Session extends React.Component {
   renderRoutine() {
-    if (this.props.sessionType == "PULL") {
-      return this.renderPullRoutine();
-    } else if (this.props.sessionType == "PUSH") {
-      return this.renderPushRoutine();
-    } else {
-      return this.renderLegsRoutine();
-    }
-  }
-
-  renderPullRoutine() {
     return (
       <View styleName="vertical">
-        <RoutineItem workout="Dumbbell Rows" reps="4x5, 1x5+" />
-        <RoutineItem workout="Pulldowns" reps="3x8-12" />
-        <RoutineItem
-          workout="Seated Cable/Chest Supported Rows"
-          reps="3x8-12"
-        />
-        <RoutineItem workout="Face Pulls" reps="5x15-20" />
-        <RoutineItem workout="Hammer Curls" reps="4x8-12" />
-        <RoutineItem workout="Dumbbell Curls" reps="4x8-12" />
-      </View>
-    );
-  }
-
-  renderPushRoutine() {
-    return (
-      <View styleName="vertical">
-        <RoutineItem
-          workout="Single-Armed Dumbbell Bench Press"
-          reps="4x5, 1x5+"
-        />
-        <RoutineItem workout="Overhead Dumbbell Press" reps="3x8-12" />
-        <RoutineItem workout="Incline Dumbbell Press" reps="3x8-12" />
-        <RoutineItem
-          workout="Triceps Pushdowns SS Lateral Raises"
-          reps="3x8-12 / 3x15-20"
-        />
-        <RoutineItem
-          workout="Overhead Triceps Extensions SS Lateral Raises"
-          reps="3x8-12 / 3x15-20"
-        />
-      </View>
-    );
-  }
-
-  renderLegsRoutine() {
-    return (
-      <View styleName="vertical">
-        <RoutineItem workout="Squat (Dumbbell)" reps="2x5, 1x5+" />
-        <RoutineItem workout="Romanian Deadlift (Dumbbell)" reps="3x8-12" />
-        <RoutineItem workout="Leg Press" reps="3x8-12" />
-        <RoutineItem workout="Leg Curls" reps="3x8-12" />
-        <RoutineItem workout="Calf Raises" reps="5x8-12" />
+        {this.props.routine.items.map((id, i) => (
+          <RoutineItem
+            workout={this.props.routineItems[id].workout}
+            reps={this.props.routineItems[id].reps}
+            lastWeight={this.props.routineItems[id].lastWeight}
+            key={i}
+          />
+        ))}
       </View>
     );
   }

@@ -18,11 +18,30 @@ class RoutineItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: "checkbox-off"
+      status: "checkbox-off",
+      lastweight: "0"
     };
+
+    this.hasChanged = false;
+
+    AsyncStorage.getItem(this.props.workout).then(workoutInfo => {
+      if (workoutInfo != null) {
+        this.setState({
+          lastweight: JSON.parse(workoutInfo).lastweight
+        });
+      }
+    });
   }
 
-  onChangeWeightText = text => {};
+  componentWillUnmount() {
+    if (this.hasChanged)
+      AsyncStorage.setItem(this.props.workout, JSON.stringify(this.state));
+  }
+
+  onChangeWeightText = text => {
+    this.setState({ lastweight: text });
+    this.hasChanged = true;
+  };
 
   _onPress = () => {
     if (this.state.status == "checkbox-off") {
@@ -39,7 +58,7 @@ class RoutineItem extends React.Component {
           <Tile style={{ flex: 1, alignItems: "center" }}>
             <Caption style={{ fontSize: 14 }}>Weight</Caption>
             <TextInput
-              defaultValue={this.props.lastWeight.toString()}
+              defaultValue={this.state.lastweight.toString()}
               onChangeText={this.onChangeWeightText}
               style={{
                 fontSize: 25,

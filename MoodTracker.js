@@ -14,7 +14,7 @@ class MoodTracker extends React.Component {
     AsyncStorage.getItem("moodData").then(moodData => {
       if (moodData != null) {
         let mH = JSON.parse(moodData).moodHistory;
-        if (mH.length != 0) {
+        if (mH != null && mH.length != 0) {
           if (mH[mH.length - 1].date != new Date().toLocaleDateString()) {
             this.setState({
               moodHistory: JSON.parse(moodData).moodHistory

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { AsyncStorage } from "react-native";
+import { AsyncStorage, ScrollView } from "react-native";
 import {
   ListView,
   Row,
@@ -13,38 +13,116 @@ import {
   TouchableOpacity
 } from "@shoutem/ui";
 import Modal from "react-native-modal";
-import SessionHistoryItem from "./SessionHistoryItem";
+import SessionHistory from "./SessionHistory";
 import Session from "./Session";
+import RoutineChoiceButton from "./RoutineChoiceButton";
+
+/*
+      fitnessData: {
+        pastSessions: [],
+        routineItems: new Map([
+          [1, { workout: "Dumbbell Rows", reps: "4x5, 1x5+", lastWeight: 0 }],
+          [2, { workout: "Pulldowns", reps: "3x8-12", lastWeight: 0 }],
+          [
+            3,
+            {
+              workout: "Seated Cable/Chest Supported Rows",
+              reps: "3x8-12",
+              lastWeight: 0
+            }
+          ],
+          [4, { workout: "Face Pulls", reps: "5x15-20", lastWeight: 0 }],
+          [5, { workout: "Hammer Curls", reps: "4x8-12", lastWeight: 0 }],
+          [6, { workout: "Dumbbell Curls", reps: "4x8-12", lastWeight: 0 }]
+        ]),
+        routines: [{ name: "PULL", routine: [1, 2, 3, 4, 5, 6] }]
+      }
+
+*/
 
 class Fitness extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       showChooseModal: false,
+      currSession: -1, // index for routines array | -1 = no current session
+      isCreatingRoutine: false,
       pastSessions: [],
-      session: "NONE",
-      badChoice: ""
+      routineItems: {
+        1: { workout: "Dumbbell Rows", reps: "4x5, 1x5+", lastWeight: 0 },
+        2: { workout: "Pulldowns", reps: "3x8-12", lastWeight: 0 },
+        3: {
+          workout: "Seated Cable/Chest Supported Rows",
+          reps: "3x8-12",
+          lastWeight: 0
+        },
+        4: { workout: "Face Pulls", reps: "5x15-20", lastWeight: 0 },
+        5: { workout: "Hammer Curls", reps: "4x8-12", lastWeight: 0 },
+        6: { workout: "Dumbbell Curls", reps: "4x8-12", lastWeight: 0 },
+        7: {
+          workout: "Single-Armed Dumbbell Bench Press",
+          reps: "4x5, 1x5+",
+          lastWeight: 0
+        },
+        8: {
+          workout: "Overhead Dumbbell Press",
+          reps: "3x8-12",
+          lastWeight: 0
+        },
+        9: { workout: "Incline Dumbbell Press", reps: "3x8-12", lastWeight: 0 },
+        10: {
+          workout: "Triceps Pushdowns SS Lateral Raises",
+          reps: "3x8-12 / 3x15-20",
+          lastWeight: 0
+        },
+        11: {
+          workout: "Overhead Triceps Extensions SS Lateral Raises",
+          reps: "3x8-12 / 3x15-20",
+          lastWeight: 0
+        },
+        12: { workout: "Squat (Dumbbell)", reps: "2x5, 1x5+", lastWeight: 0 },
+        13: {
+          workout: "Romanian Deadlift (Dumbbell)",
+          reps: "3x8-12",
+          lastWeight: 0
+        },
+        14: {
+          workout: "Leg Press",
+          reps: "3x8-12",
+          lastWeight: 0
+        },
+        15: { workout: "Leg Curls", reps: "3x8-12", lastWeight: 0 },
+        16: { workout: "Calf Raises", reps: "5x8-12", lastWeight: 0 }
+      },
+      routines: [
+        { name: "PULL", items: [1, 2, 3, 4, 5, 6] },
+        { name: "PUSH", items: [7, 8, 9, 10, 11] },
+        { name: "LEGS", items: [12, 13, 14, 15, 16] }
+      ]
     };
-    this.renderSessionHistoryItem = this.renderSessionHistoryItem.bind(this);
-  }
 
-  componentDidMount() {
-    AsyncStorage.getItem("pastSessions").then(pastSessions => {
-      if (pastSessions != null && pastSessions != "[]") {
+    //load fitnessData from storage (pastSessions, routineItems, routines)
+    AsyncStorage.getItem("fitnessData").then(fitnessData => {
+      if (fitnessData != null) {
+        let fD = JSON.parse(fitnessData);
+
         this.setState({
-          pastSessions: JSON.parse(pastSessions)
+          pastSessions: fD.pastSessions,
+          routineItems: fD.routineItems,
+          routines: fD.routines
         });
-
-        if (
-          Date.now() - Date.parse(this.state.pastSessions[0].date) <
-          86400000
-        ) {
-          this.setState({
-            badChoice: this.state.pastSessions[0].type
-          });
-        }
       }
     });
+  }
+
+  componentWillUnmount() {
+    //save fitnessData to asyncStorage
+    let fitnessData = {
+      pastSessions: this.state.pastSessions,
+      routineItems: this.state.routineItems,
+      routines: this.state.routines
+    };
+    AsyncStorage.setItem("fitnessData", JSON.stringify(fitnessData));
   }
 
   updateSession = type => {
@@ -57,21 +135,18 @@ class Fitness extends React.Component {
 
     if (ps.length != 0) {
       ps.unshift({
-        type: this.state.session,
+        type: this.state.routines[this.state.currSession].name,
         date: date.toLocaleDateString()
       });
     } else {
       ps = new Array(1);
       ps[0] = {
-        type: this.state.session,
+        type: this.state.routines[this.state.currSession].name,
         date: date.toLocaleDateString()
       };
     }
 
-    AsyncStorage.setItem("pastSessions", JSON.stringify(ps));
-
-    this.setState({ badChoice: ps[0].type });
-    this.setState({ session: "NONE" });
+    this.setState({ currSession: -1 });
     this.setState({ pastSessions: ps });
   };
 
@@ -79,56 +154,25 @@ class Fitness extends React.Component {
     const ps = this.state.pastSessions.slice(0); //copy of state
     let removed = ps.splice(index, 1);
     this.setState({ pastSessions: ps });
-    AsyncStorage.setItem("pastSessions", JSON.stringify(ps));
-
-    if (this.state.badChoice == removed[0].type) {
-      this.setState({ badChoice: "" });
-    }
   };
 
-  _onPressAddSession = () => {
-    this.setState({ showChooseModal: true });
-  };
-
-  _onPressMakeChoicePush = () => {
+  onPressChooseRoutine = routineIndex => {
     this.setState({ showChooseModal: false });
-    this.setState({ session: "PUSH" });
+    this.setState({ currSession: routineIndex });
   };
-
-  _onPressMakeChoicePull = () => {
-    this.setState({ showChooseModal: false });
-    this.setState({ session: "PULL" });
-  };
-
-  _onPressMakeChoiceLegs = () => {
-    this.setState({ showChooseModal: false });
-    this.setState({ session: "LEGS" });
-  };
-
-  renderSessionHistoryItem(session, sid, index) {
-    return (
-      <SessionHistoryItem
-        session={session}
-        index={index}
-        removeSession={this.removeSession}
-      />
-    );
-  }
 
   renderFitnessHome() {
     return (
       <View style={{ flex: 1 }}>
-        <View style={{ height: 600 }}>
-          <ListView
-            data={this.state.pastSessions}
-            renderRow={this.renderSessionHistoryItem}
-          />
-        </View>
+        <SessionHistory
+          pastSessions={this.state.pastSessions}
+          removeSession={this.removeSession}
+        />
         <View style={{ flex: 1 }}>
           <Button
             styleName="secondary"
             style={{ flex: 1 }}
-            onPress={this._onPressAddSession}
+            onPress={() => this.setState({ showChooseModal: true })}
           >
             <Text style={{ fontSize: 20 }}>New Session</Text>
           </Button>
@@ -138,81 +182,57 @@ class Fitness extends React.Component {
           onBackdropPress={() => {
             this.setState({ showChooseModal: false });
           }}
+          style={{ paddingVertical: 100 }} // makes it so modal is click-offable if lots of routines
         >
-          <View
+          <Tile
             style={{
-              alignItems: "center"
+              alignItems: "center",
+              justifyContent: "center"
             }}
           >
-            <Tile
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                height: 300
-              }}
-            >
+            <ScrollView>
+              {this.state.routines.map((routine, index) => (
+                <RoutineChoiceButton
+                  key={index}
+                  index={index}
+                  name={routine.name}
+                  onPressChooseRoutine={this.onPressChooseRoutine}
+                />
+              ))}
               <Button
-                onPress={this._onPressMakeChoicePull}
-                disabled={this.state.badChoice == "PULL"}
-                styleName={
-                  this.state.badChoice == "PULL"
-                    ? "full-width muted"
-                    : "full-width"
-                }
+                onPress={() => this.setState({ isCreatingRoutine: true })}
+                style={{ paddingTop: 15, paddingBottom: 10 }}
               >
-                <Text
-                  styleName="bold"
-                  style={{ fontSize: 40, paddingHorizontal: 100 }}
-                >
-                  PULL
-                </Text>
+                <Icon
+                  name="plus-button"
+                  style={{
+                    fontSize: 46,
+                    backgroundColor: "black",
+                    color: "white",
+                    borderWidth: 2,
+                    borderRadius: 30
+                  }}
+                />
               </Button>
-              <Button
-                onPress={this._onPressMakeChoicePush}
-                disabled={this.state.badChoice == "PUSH"}
-                styleName={
-                  this.state.badChoice == "PUSH"
-                    ? "full-width muted"
-                    : "full-width"
-                }
-              >
-                <Text
-                  styleName="bold"
-                  style={{ fontSize: 40, paddingHorizontal: 100 }}
-                >
-                  PUSH
-                </Text>
-              </Button>
-              <Button
-                onPress={this._onPressMakeChoiceLegs}
-                disabled={this.state.badChoice == "LEGS"}
-                styleName={
-                  this.state.badChoice == "LEGS"
-                    ? "full-width muted"
-                    : "full-width"
-                }
-              >
-                <Text
-                  styleName="bold"
-                  style={{ fontSize: 40, paddingHorizontal: 100 }}
-                >
-                  LEGS
-                </Text>
-              </Button>
-            </Tile>
-          </View>
+            </ScrollView>
+          </Tile>
         </Modal>
       </View>
     );
   }
 
   render() {
-    if (this.state.session == "NONE") {
-      return this.renderFitnessHome();
+    if (this.state.currSession == -1) {
+      if (this.state.isCreatingRoutine) {
+        return <Text>Creating Routine</Text>;
+      } else {
+        return this.renderFitnessHome();
+      }
     } else {
       return (
         <Session
-          sessionType={this.state.session}
+          routine={this.state.routines[this.state.currSession]}
+          routineItems={this.state.routineItems}
           completeSession={this.completeSession}
         />
       );
