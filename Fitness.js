@@ -16,6 +16,7 @@ import Modal from "react-native-modal";
 import SessionHistory from "./SessionHistory";
 import Session from "./Session";
 import RoutineChoiceButton from "./RoutineChoiceButton";
+import RoutineCreator from "./RoutineCreator";
 
 /*
       fitnessData: {
@@ -161,6 +162,12 @@ class Fitness extends React.Component {
     this.setState({ currSession: routineIndex });
   };
 
+  addRoutine = routine => {
+    let r = this.state.routines.splice(0);
+    r.push(routine);
+    this.setState({ routines: r, isCreatingRoutine: false });
+  };
+
   renderFitnessHome() {
     return (
       <View style={{ flex: 1 }}>
@@ -178,6 +185,7 @@ class Fitness extends React.Component {
           </Button>
         </View>
         <Modal
+          hideModalContentWhileAnimating={true}
           isVisible={this.state.showChooseModal}
           onBackdropPress={() => {
             this.setState({ showChooseModal: false });
@@ -200,17 +208,22 @@ class Fitness extends React.Component {
                 />
               ))}
               <Button
-                onPress={() => this.setState({ isCreatingRoutine: true })}
+                onPress={() =>
+                  this.setState({
+                    isCreatingRoutine: true,
+                    showChooseModal: false
+                  })
+                }
                 style={{ paddingTop: 15, paddingBottom: 10 }}
               >
                 <Icon
                   name="plus-button"
                   style={{
-                    fontSize: 46,
+                    fontSize: 36,
                     backgroundColor: "black",
                     color: "white",
-                    borderWidth: 2,
-                    borderRadius: 30
+                    borderWidth: 1,
+                    borderRadius: 2
                   }}
                 />
               </Button>
@@ -224,7 +237,12 @@ class Fitness extends React.Component {
   render() {
     if (this.state.currSession == -1) {
       if (this.state.isCreatingRoutine) {
-        return <Text>Creating Routine</Text>;
+        return (
+          <RoutineCreator
+            routineItems={this.state.routineItems}
+            addRoutine={this.addRoutine}
+          />
+        );
       } else {
         return this.renderFitnessHome();
       }

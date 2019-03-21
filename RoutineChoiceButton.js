@@ -5,7 +5,7 @@ class RoutineChoiceButton extends React.Component {
   render() {
     return (
       <Button onPress={() => this.props.onPressChooseRoutine(this.props.index)}>
-        <Text styleName="bold" style={{ fontSize: 40, paddingHorizontal: 100 }}>
+        <Text styleName="bold" style={{ fontSize: 40, paddingHorizontal: 20 }}>
           {this.props.name}
         </Text>
       </Button>

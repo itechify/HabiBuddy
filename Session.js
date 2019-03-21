@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { ScrollView } from "react-native";
 import {
   ListView,
   Row,
@@ -11,13 +12,12 @@ import {
   Tile,
   TouchableOpacity
 } from "@shoutem/ui";
-import Modal from "react-native-modal";
 import RoutineItem from "./RoutineItem";
 
 class Session extends React.Component {
   renderRoutine() {
     return (
-      <View styleName="vertical">
+      <ScrollView>
         {this.props.routine.items.map((id, i) => (
           <RoutineItem
             workout={this.props.routineItems[id].workout}
@@ -26,7 +26,7 @@ class Session extends React.Component {
             key={i}
           />
         ))}
-      </View>
+      </ScrollView>
     );
   }
 
@@ -36,7 +36,11 @@ class Session extends React.Component {
         {this.renderRoutine()}
         <View
           styleName="vertical"
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={{
+            height: 100,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
         >
           <Button
             style={{
