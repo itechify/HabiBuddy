@@ -17,11 +17,12 @@ import SessionHistory from "./SessionHistory";
 import Session from "./Session";
 import RoutineChoiceButton from "./RoutineChoiceButton";
 import RoutineCreator from "./RoutineCreator";
+import ExercisesViewer from "./ExercisesViewer";
 
 /*
       fitnessData: {
         pastSessions: [],
-        routineItems: new Map([
+        exercises: new Map([
           [1, { workout: "Dumbbell Rows", reps: "4x5, 1x5+", lastWeight: 0 }],
           [2, { workout: "Pulldowns", reps: "3x8-12", lastWeight: 0 }],
           [
@@ -48,8 +49,9 @@ class Fitness extends React.Component {
       showChooseModal: false,
       currSession: -1, // index for routines array | -1 = no current session
       isCreatingRoutine: false,
+      isViewingExercises: false,
       pastSessions: [],
-      routineItems: {
+      exercises: {
         1: { workout: "Dumbbell Rows", reps: "4x5, 1x5+", lastWeight: 0 },
         2: { workout: "Pulldowns", reps: "3x8-12", lastWeight: 0 },
         3: {
@@ -102,14 +104,14 @@ class Fitness extends React.Component {
       ]
     };
 
-    //load fitnessData from storage (pastSessions, routineItems, routines)
+    //load fitnessData from storage (pastSessions, exercises, routines)
     AsyncStorage.getItem("fitnessData").then(fitnessData => {
       if (fitnessData != null) {
         let fD = JSON.parse(fitnessData);
 
         this.setState({
           pastSessions: fD.pastSessions,
-          routineItems: fD.routineItems,
+          exercises: fD.exercises,
           routines: fD.routines
         });
       }
@@ -120,7 +122,7 @@ class Fitness extends React.Component {
     //save fitnessData to asyncStorage
     let fitnessData = {
       pastSessions: this.state.pastSessions,
-      routineItems: this.state.routineItems,
+      exercises: this.state.exercises,
       routines: this.state.routines
     };
     AsyncStorage.setItem("fitnessData", JSON.stringify(fitnessData));
@@ -163,9 +165,27 @@ class Fitness extends React.Component {
   };
 
   addRoutine = routine => {
-    let r = this.state.routines.splice(0);
+    let r = this.state.routines.slice(0);
     r.push(routine);
     this.setState({ routines: r, isCreatingRoutine: false });
+  };
+
+  removeRoutine = index => {
+    let r = this.state.routines.slice(0);
+    r.splice(index, 1);
+    this.setState({ routines: r });
+  };
+
+  updateExerciseLastWeight = (id, newWeight) => {
+    let ri = { ...this.state.exercises };
+    ri[id].lastWeight = newWeight;
+    this.setState({ exercises: ri });
+  };
+
+  addNewExercise = (key, workout, reps) => {
+    let ri = { ...this.state.exercises };
+    ri[key] = { workout: workout, reps: reps, lastWeight: 0 };
+    this.setState({ exercises: ri });
   };
 
   renderFitnessHome() {
@@ -178,10 +198,17 @@ class Fitness extends React.Component {
         <View style={{ flex: 1 }}>
           <Button
             styleName="secondary"
-            style={{ flex: 1 }}
+            style={{ flex: 1, margin: 5 }}
             onPress={() => this.setState({ showChooseModal: true })}
           >
             <Text style={{ fontSize: 20 }}>New Session</Text>
+          </Button>
+          <Button
+            styleName="secondary"
+            style={{ flex: 0.5, margin: 5 }}
+            onPress={() => this.setState({ isViewingExercises: true })}
+          >
+            <Text style={{ fontSize: 20 }}>Exercises</Text>
           </Button>
         </View>
         <Modal
@@ -198,13 +225,14 @@ class Fitness extends React.Component {
               justifyContent: "center"
             }}
           >
-            <ScrollView>
+            <ScrollView style={{ width: "100%", padding: 5 }}>
               {this.state.routines.map((routine, index) => (
                 <RoutineChoiceButton
                   key={index}
                   index={index}
                   name={routine.name}
                   onPressChooseRoutine={this.onPressChooseRoutine}
+                  removeRoutine={this.removeRoutine}
                 />
               ))}
               <Button
@@ -239,8 +267,15 @@ class Fitness extends React.Component {
       if (this.state.isCreatingRoutine) {
         return (
           <RoutineCreator
-            routineItems={this.state.routineItems}
+            exercises={this.state.exercises}
             addRoutine={this.addRoutine}
+          />
+        );
+      } else if (this.state.isViewingExercises) {
+        return (
+          <ExercisesViewer
+            exercises={this.state.exercises}
+            addNewExercise={this.addNewExercise}
           />
         );
       } else {
@@ -250,8 +285,9 @@ class Fitness extends React.Component {
       return (
         <Session
           routine={this.state.routines[this.state.currSession]}
-          routineItems={this.state.routineItems}
+          exercises={this.state.exercises}
           completeSession={this.completeSession}
+          updateExerciseLastWeight={this.updateExerciseLastWeight}
         />
       );
     }

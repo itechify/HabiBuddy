@@ -12,18 +12,20 @@ import {
   Tile,
   TouchableOpacity
 } from "@shoutem/ui";
-import RoutineItem from "./RoutineItem";
+import Exercise from "./Exercise";
 
 class Session extends React.Component {
   renderRoutine() {
     return (
       <ScrollView>
         {this.props.routine.items.map((id, i) => (
-          <RoutineItem
-            workout={this.props.routineItems[id].workout}
-            reps={this.props.routineItems[id].reps}
-            lastWeight={this.props.routineItems[id].lastWeight}
+          <Exercise
+            workout={this.props.exercises[id].workout}
+            reps={this.props.exercises[id].reps}
+            lastWeight={this.props.exercises[id].lastWeight}
             key={i}
+            id={id}
+            updateExerciseLastWeight={this.props.updateExerciseLastWeight}
           />
         ))}
       </ScrollView>

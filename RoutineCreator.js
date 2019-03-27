@@ -16,10 +16,10 @@ class RoutineCreator extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			chosenRoutineItems: [],
-			routineItemsToAdd: [],
+			chosenExercises: [],
+			exercisesToAdd: [],
 			showChooseModal: false,
-			name: ""
+			name: "ROUTINE NAME"
 		};
 	}
 
@@ -43,18 +43,16 @@ class RoutineCreator extends React.Component {
 					}}
 					contentContainerStyle={{ alignItems: "center" }}
 				>
-					{this.state.chosenRoutineItems.map((key, index) => (
+					{this.state.chosenExercises.map((key, index) => (
 						<TouchableOpacity
 							key={index}
 							onPress={() => {
-								let cri = this.state.chosenRoutineItems.slice(
-									0
-								);
+								let cri = this.state.chosenExercises.slice(0);
 								if (cri.includes(key)) {
 									cri.splice(cri.indexOf(key), 1);
 								}
 								this.setState({
-									chosenRoutineItems: cri
+									chosenExercises: cri
 								});
 							}}
 						>
@@ -64,10 +62,19 @@ class RoutineCreator extends React.Component {
 									alignItems: "center",
 									paddingHorizontal: 5,
 									borderWidth: 1,
-									width: Dimensions.get("window").width - 70,
+									width: Dimensions.get("window").width - 40,
 									margin: 5
 								}}
 							>
+								<Icon
+									name="minus-button"
+									style={{
+										fontSize: 20,
+										borderWidth: 1,
+										borderRadius: 2,
+										marginRight: 3
+									}}
+								/>
 								<View
 									styleName="vertical"
 									style={{
@@ -78,10 +85,10 @@ class RoutineCreator extends React.Component {
 										styleName="bold"
 										style={{ fontSize: 18 }}
 									>
-										{this.props.routineItems[key].workout}
+										{this.props.exercises[key].workout}
 									</Subtitle>
 									<Text style={{ fontSize: 12 }}>
-										{this.props.routineItems[key].reps}
+										{this.props.exercises[key].reps}
 									</Text>
 								</View>
 							</View>
@@ -109,7 +116,7 @@ class RoutineCreator extends React.Component {
 					onPress={() =>
 						this.props.addRoutine({
 							name: this.state.name,
-							items: this.state.chosenRoutineItems
+							items: this.state.chosenExercises
 						})
 					}
 				>
@@ -140,12 +147,12 @@ class RoutineCreator extends React.Component {
 							style={{ flex: 1 }}
 							contentContainerStyle={{ borderWidth: 2 }}
 						>
-							{Object.keys(this.props.routineItems).map(
+							{Object.keys(this.props.exercises).map(
 								(key, index) => (
 									<TouchableOpacity
 										key={index}
 										onPress={() => {
-											let rita = this.state.routineItemsToAdd.slice(
+											let rita = this.state.exercisesToAdd.slice(
 												0
 											);
 											if (rita.includes(key)) {
@@ -157,7 +164,7 @@ class RoutineCreator extends React.Component {
 												rita.push(key);
 											}
 											this.setState({
-												routineItemsToAdd: rita
+												exercisesToAdd: rita
 											});
 										}}
 									>
@@ -171,7 +178,7 @@ class RoutineCreator extends React.Component {
 													Dimensions.get("window")
 														.width - 70,
 												margin: 5,
-												backgroundColor: this.state.routineItemsToAdd.includes(
+												backgroundColor: this.state.exercisesToAdd.includes(
 													key
 												)
 													? "#b0db8c"
@@ -197,14 +204,14 @@ class RoutineCreator extends React.Component {
 													style={{ fontSize: 18 }}
 												>
 													{
-														this.props.routineItems[
+														this.props.exercises[
 															key
 														].workout
 													}
 												</Subtitle>
 												<Text style={{ fontSize: 12 }}>
 													{
-														this.props.routineItems[
+														this.props.exercises[
 															key
 														].reps
 													}
@@ -220,10 +227,10 @@ class RoutineCreator extends React.Component {
 							style={{ marginTop: 10, flex: 0.2 }}
 							onPress={() => {
 								this.setState({
-									chosenRoutineItems: this.state.chosenRoutineItems.concat(
-										this.state.routineItemsToAdd
+									chosenExercises: this.state.chosenExercises.concat(
+										this.state.exercisesToAdd
 									),
-									routineItemsToAdd: [],
+									exercisesToAdd: [],
 									showChooseModal: false
 								});
 							}}

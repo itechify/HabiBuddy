@@ -14,7 +14,7 @@ import {
 import Swipeout from "react-native-swipeout";
 import { AsyncStorage } from "react-native";
 
-class RoutineItem extends React.Component {
+class Exercise extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,7 +22,9 @@ class RoutineItem extends React.Component {
     };
   }
 
-  onChangeWeightText = text => {};
+  onChangeWeightText = text => {
+    this.props.updateExerciseLastWeight(this.props.id, text);
+  };
 
   _onPress = () => {
     if (this.state.status == "checkbox-off") {
@@ -77,4 +79,4 @@ class RoutineItem extends React.Component {
   }
 }
 
-export default RoutineItem;
+export default Exercise;
