@@ -128,6 +128,16 @@ class Fitness extends React.Component {
     AsyncStorage.setItem("fitnessData", JSON.stringify(fitnessData));
   }
 
+  componentDidUpdate() {
+    //save fitnessData to asyncStorage
+    let fitnessData = {
+      pastSessions: this.state.pastSessions,
+      exercises: this.state.exercises,
+      routines: this.state.routines
+    };
+    AsyncStorage.setItem("fitnessData", JSON.stringify(fitnessData));
+  }
+
   updateSession = type => {
     this.setState({ session: type });
   };
@@ -185,6 +195,19 @@ class Fitness extends React.Component {
   addNewExercise = (key, workout, reps) => {
     let ri = { ...this.state.exercises };
     ri[key] = { workout: workout, reps: reps, lastWeight: 0 };
+    this.setState({ exercises: ri });
+  };
+
+  editExercise = (key, workout, reps) => {
+    let ri = { ...this.state.exercises };
+    ri[key].workout = workout;
+    ri[key].reps = reps;
+    this.setState({ exercises: ri });
+  };
+
+  deleteExercise = key => {
+    let ri = { ...this.state.exercises };
+    delete ri[key];
     this.setState({ exercises: ri });
   };
 
@@ -276,6 +299,8 @@ class Fitness extends React.Component {
           <ExercisesViewer
             exercises={this.state.exercises}
             addNewExercise={this.addNewExercise}
+            editExercise={this.editExercise}
+            deleteExercise={this.deleteExercise}
           />
         );
       } else {

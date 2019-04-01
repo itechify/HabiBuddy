@@ -15,25 +15,34 @@ class RoutineChoiceButton extends React.Component {
       }
     ];
     return (
-      <Swipeout
-        right={swipeoutBtns}
-        autoClose={true}
-        backgroundColor="transparent"
+      <View
+        style={{
+          width: "100%",
+          borderColor: "black",
+          borderWidth: 2,
+          marginVertical: 3
+        }}
       >
-        <Button
-          onPress={() => this.props.onPressChooseRoutine(this.props.index)}
-          style={{
-            width: "100%",
-            borderColor: "black",
-            borderWidth: 2,
-            marginVertical: 3
-          }}
+        <Swipeout
+          right={swipeoutBtns}
+          autoClose={true}
+          backgroundColor="transparent"
         >
-          <Text styleName="bold" style={{ fontSize: 40, textAlign: "center" }}>
-            {this.props.name}
-          </Text>
-        </Button>
-      </Swipeout>
+          <Button
+            onPress={() => this.props.onPressChooseRoutine(this.props.index)}
+            style={{
+              width: "100%"
+            }}
+          >
+            <Text
+              styleName="bold"
+              style={{ fontSize: 40, textAlign: "center" }}
+            >
+              {this.props.name}
+            </Text>
+          </Button>
+        </Swipeout>
+      </View>
     );
   }
 }

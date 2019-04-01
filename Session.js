@@ -18,16 +18,20 @@ class Session extends React.Component {
   renderRoutine() {
     return (
       <ScrollView>
-        {this.props.routine.items.map((id, i) => (
-          <Exercise
-            workout={this.props.exercises[id].workout}
-            reps={this.props.exercises[id].reps}
-            lastWeight={this.props.exercises[id].lastWeight}
-            key={i}
-            id={id}
-            updateExerciseLastWeight={this.props.updateExerciseLastWeight}
-          />
-        ))}
+        {this.props.routine.items.map((id, i) => {
+          if (this.props.exercises[id] != null) {
+            return (
+              <Exercise
+                workout={this.props.exercises[id].workout}
+                reps={this.props.exercises[id].reps}
+                lastWeight={this.props.exercises[id].lastWeight}
+                key={i}
+                id={id}
+                updateExerciseLastWeight={this.props.updateExerciseLastWeight}
+              />
+            );
+          }
+        })}
       </ScrollView>
     );
   }

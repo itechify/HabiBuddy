@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import { ScrollView } from "react-native";
 import { View, Subtitle, Text, TextInput, Button } from "@shoutem/ui";
+import Swipeout from "react-native-swipeout";
 
 class ExercisesViewer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      newExerciseName: "",
-      newExerciseReps: ""
+      workout: "",
+      reps: "",
+      editKey: null
     };
   }
 
@@ -22,20 +24,54 @@ class ExercisesViewer extends React.Component {
           }}
         >
           {Object.keys(this.props.exercises).map((key, index) => (
-            <View
+            <Swipeout
               key={index}
-              styleName="vertical"
-              style={{
-                margin: 5
-              }}
+              right={[
+                {
+                  text: "Edit",
+                  backgroundColor: "blue",
+                  underlayColor: "rgba(0, 0, 0, 1, 0.6)",
+                  onPress: () => {
+                    this.setState({
+                      workout: this.props.exercises[key].workout,
+                      reps: this.props.exercises[key].reps,
+                      editKey: key
+                    });
+                  }
+                },
+                {
+                  text: "Delete",
+                  backgroundColor: "red",
+                  underlayColor: "rgba(0, 0, 0, 1, 0.6)",
+                  onPress: () => {
+                    this.props.deleteExercise(key);
+                    if (this.state.editKey == key) {
+                      this.setState({
+                        workout: "",
+                        reps: "",
+                        editKey: null
+                      });
+                    }
+                  }
+                }
+              ]}
+              autoClose={true}
+              backgroundColor="transparent"
             >
-              <Subtitle styleName="bold" style={{ fontSize: 18 }}>
-                {this.props.exercises[key].workout}
-              </Subtitle>
-              <Text style={{ fontSize: 12 }}>
-                {this.props.exercises[key].reps}
-              </Text>
-            </View>
+              <View
+                styleName="vertical"
+                style={{
+                  margin: 5
+                }}
+              >
+                <Subtitle styleName="bold" style={{ fontSize: 18 }}>
+                  {this.props.exercises[key].workout}
+                </Subtitle>
+                <Text style={{ fontSize: 12 }}>
+                  {this.props.exercises[key].reps}
+                </Text>
+              </View>
+            </Swipeout>
           ))}
         </ScrollView>
         <View
@@ -49,39 +85,54 @@ class ExercisesViewer extends React.Component {
         >
           <TextInput
             placeholder="EXERCISE NAME"
+            multiline
             style={{
               fontSize: 25,
               padding: 0,
-              textAlign: "center"
+              textAlign: "center",
+              flex: 1
             }}
-            onChangeText={text => this.setState({ newExerciseName: text })}
-            value={this.state.newExerciseName}
+            onChangeText={text => this.setState({ workout: text })}
+            value={this.state.workout}
           />
           <TextInput
             placeholder="REPS"
             style={{
               fontSize: 20,
               padding: 0,
-              textAlign: "center"
+              textAlign: "center",
+              flex: 0.6
             }}
-            onChangeText={text => this.setState({ newExerciseReps: text })}
-            value={this.state.newExerciseReps}
+            onChangeText={text => this.setState({ reps: text })}
+            value={this.state.reps}
           />
           <Button
             styleName="secondary"
-            style={{ marginHorizontal: 20 }}
+            style={{ marginBottom: 20, marginHorizontal: 20, flex: 0.6 }}
             onPress={() => {
-              if (this.state.newExerciseName != "") {
-                this.props.addNewExercise(
-                  new Date().valueOf(),
-                  this.state.newExerciseName,
-                  this.state.newExerciseReps
-                );
+              if (this.state.workout != "") {
+                if (this.state.editKey == null) {
+                  this.props.addNewExercise(
+                    new Date().valueOf(),
+                    this.state.workout,
+                    this.state.reps
+                  );
+                } else {
+                  this.props.editExercise(
+                    this.state.editKey,
+                    this.state.workout,
+                    this.state.reps
+                  );
+                }
               }
-              this.setState({ newExerciseName: "", newExerciseReps: "" });
+              this.setState({ workout: "", reps: "", editKey: null });
             }}
           >
-            <Text>+</Text>
+            {this.state.editKey ? (
+              <Text style={{ fontSize: 20 }}>Confirm Edit</Text>
+            ) : (
+              <Text style={{ fontSize: 20 }}>+</Text>
+            )}
           </Button>
         </View>
       </View>
