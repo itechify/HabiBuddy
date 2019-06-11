@@ -16,6 +16,7 @@ Keeps track of past workout sessions with editable history.
 ![image](https://lh3.googleusercontent.com/hL-p57dLpxuqEWMlW3CsFhrW32ibn15CizpHa206eqOEZ75a5eegK3gTY7kl-4S6vPcV_s2pvT4VrWWZWA2VkLd88dI=s395)
 
 
+
 New workout sessions can be started using a previously created routine, or a new routine can be created.
 
 ![image](https://lh3.googleusercontent.com/4LkngbVkDP3dpR8Ot5jzYmLGPNVX7rrE2xx-ZnzJ5vuCGgodjs2aITSBjv9pgczvr-1oQYnBVFj4t2kkjHgBdhIKMA=s395)
@@ -23,10 +24,15 @@ New workout sessions can be started using a previously created routine, or a new
 ![image](https://lh3.googleusercontent.com/jt7FN-tL10qhpMckqZ7NhbxiaKHlcCOlVVsBwu9IDh_DTQHuVjRNjwLkXD4yEsGPq77qJxshRuPuutGDBA2j8Rf1rZtl=s395)
 ![image](https://lh3.googleusercontent.com/3tlntsH5Oay1n3-javcLcXQcZfibrgEeLxaFzYmscb_1j_KDYyvl5WQi8HVkzeEPywiNvsgr4xcXKsFJ2SR4UcCJMw=s395)
 
+
+
 New exercises can also be created and edited for building the routines.
 
 ![image](https://lh3.googleusercontent.com/Ewyh_YL3hNriTgZmy2iDp1b4BdBVqbMD30mHK3DZneSWuhZrPGJtYpEJ_M-uXItv89GjbGiUA1rh-D60qU_sG8ikKCU=s395)
 ![image](https://lh3.googleusercontent.com/VFp3M597yx3SHf0ZLZWSiqOP-raFx4OYh5vwZH0KwW4SzEEB1rg3ZYaQ0yHYB1VbiFdNP3IjUXMkvDkikbBp_LQv-_Y=s395)
+
+
+
 
 Example view while in a session (keeps track of current rep weight per exercise!):
 
